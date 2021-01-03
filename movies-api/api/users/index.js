@@ -24,20 +24,23 @@ router.put('/:id',  (req, res) => {
     .then(user => res.json(200, user));
 });
 
-router.post('/:userName/favourites', (req, res, next) => {
-    const newFavourite = req.body;
-    const query = {username: req.params.userName};
-    if (newFavourite && newFavourite.id) {
-      User.find(query).then(
-        user => {
-          (user.favourites)?user.favourites.push(newFavourite):user.favourites =[newFavourite];
-          User.findOneAndUpdate(query, {favourites:user.favourites}, {
-            new: true
-          }).then(user => res.status(201).send(user));
-        }
-      ).catch(next);
+// authenticate a user
+router.post('/', (req, res, next) => {
+    if (!req.body.username || !req.body.password) {
+        res.status(401).send('authentication failed');
     } else {
-        res.status(401).send("Unable to find user")
+        User.findByUserName(req.body.username).then(user => {
+            if (user.comparePassword(req.body.password)) {
+                req.session.user = req.body.username;
+                req.session.authenticated = true;
+                res.status(200).json({
+                    success: true,
+                    token: "temporary-token"
+                  });
+            } else {
+                res.status(401).json('authentication failed');
+            }
+        }).catch(next);
     }
   });
 

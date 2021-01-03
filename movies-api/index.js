@@ -28,6 +28,13 @@ const port = process.env.PORT;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 
+//session middleware
+app.use(session({
+  secret: 'ilikecake',
+  resave: true,
+  saveUninitialized: true
+}));
+
 app.use(express.static('public'));
 app.use('/api/movies', moviesRouter);
 app.use('/api/users', usersRouter);
