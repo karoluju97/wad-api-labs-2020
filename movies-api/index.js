@@ -6,6 +6,7 @@ import './db';
 import {loadUsers} from './seedData';
 import usersRouter from './api/users';
 import passport from './authenticate';
+import {loadUsers, loadMovies} from './seedData';
 
 dotenv.config();
 
@@ -16,8 +17,9 @@ const errHandler = (err, req, res, next) => {
       return res.status(500).send(`Something went wrong!`);
     }
     if (process.env.SEED_DB) {
-        loadUsers();
-      }
+      loadUsers();
+      loadMovies();
+    }
     res.status(500).send(`Hey!! You caught the error 👍👍, ${err.stack} `);
   };
 
