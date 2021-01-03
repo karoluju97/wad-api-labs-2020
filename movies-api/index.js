@@ -5,6 +5,7 @@ import bodyParser from 'body-parser';
 import './db';
 import {loadUsers} from './seedData';
 import usersRouter from './api/users';
+import passport from './authenticate';
 
 dotenv.config();
 
@@ -27,6 +28,7 @@ const port = process.env.PORT;
 //configure body-parser
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
+app.use(passport.initialize());​
 
 //session middleware
 app.use(session({
@@ -38,6 +40,7 @@ app.use(session({
 app.use(express.static('public'));
 app.use('/api/movies', moviesRouter);
 app.use('/api/users', usersRouter);
+app.use('/api/movies', passport.authenticate('jwt', {session: false}), moviesRouter);
 app.use(errHandler);
 
 app.listen(port, () => {
